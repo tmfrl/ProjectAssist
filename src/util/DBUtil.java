@@ -5,6 +5,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.*;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Properties;
 
 public class DBUtil {
@@ -80,8 +83,48 @@ public class DBUtil {
         }
     }
 
-    public static void main(String[] args) {
-        System.out.println(prop.get("url"));
+    public static LinkedHashMap<String, HashMap<String, Object>> getColumnInfo(ResultSetMetaData _rsmd) {
+        LinkedHashMap columnInfoMap = new LinkedHashMap();
+
+        try {
+            int columnCount = _rsmd.getColumnCount();
+
+            for (int i = 1; i <= columnCount; i++) {
+                String columnName = _rsmd.getColumnName(i);
+                String columnType = _rsmd.getColumnTypeName(i);
+                int columnSize = _rsmd.getColumnDisplaySize(i);
+
+                HashMap<String, Object> hm = new HashMap<>();
+
+                hm.put("type", columnType);
+                hm.put("size", columnSize);
+
+                columnInfoMap.put(columnName, hm);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return columnInfoMap;
+    }
+
+    public static LinkedList<String> getColumnNames(ResultSetMetaData _rsmd) {
+        LinkedList<String> columnNameList = new LinkedList<>();
+
+        int columnCount = 0;
+        try {
+            columnCount = _rsmd.getColumnCount();
+
+            for (int i = 1; i <= columnCount; i++) {
+                String columnName = _rsmd.getColumnName(i);
+
+                columnNameList.add(columnName);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return columnNameList;
     }
 
 }
